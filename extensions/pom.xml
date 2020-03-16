@@ -156,7 +156,7 @@
         
         <!-- Templating -->
         <module>qute</module>
-        <module>cassandra-client-parent</module>
+        <module>cassandra-client</module>
     </modules>
 
     <!-- Unfortunately the config below introduces a build dependency on the maven plugin

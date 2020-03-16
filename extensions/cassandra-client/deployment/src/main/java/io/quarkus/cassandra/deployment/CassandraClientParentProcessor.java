@@ -1,4 +1,4 @@
-package io.quarkus.cassandra.client.parent.deployment;
+package io.quarkus.cassandra.deployment;
 
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;

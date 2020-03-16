@@ -100,7 +100,7 @@
         <module>cache</module>
         <module>qute</module>
         <module>bootstrap-config</module>
-        <module>datastax-cassandra-client</module>
+        <module>cassandra-client</module>
     </modules>
 
     <build>
