@@ -163,6 +163,7 @@
         <proton-j.version>0.33.3</proton-j.version>
         <okhttp.version>3.14.6</okhttp.version>
         <sentry.version>1.7.30</sentry.version>
+        <datastax.java.driver.version>4.5.0</datastax.java.driver.version>
         <!-- Used for integration tests, to make sure webjars work-->
         <bootstrap.version>3.1.0</bootstrap.version>
         <subethasmtp.version>3.1.7</subethasmtp.version>
@@ -191,6 +192,7 @@
         <error-prone-annotations.version>2.2.0</error-prone-annotations.version>
         <jib-core.version>0.13.0</jib-core.version>
         <google-http-client.version>1.34.0</google-http-client.version>
+
     </properties>
 
     <dependencyManagement>
@@ -863,6 +865,16 @@
                 <version>${project.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.datastax.oss</groupId>
+                <artifactId>java-driver-core</artifactId>
+                <version>${datastax.java.driver.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.datastax.oss</groupId>
+                <artifactId>java-driver-test-infra</artifactId>
+                <version>${datastax.java.driver.version}</version>
+            </dependency>
             <!-- Quarkus test dependencies -->
             <dependency>
                 <groupId>io.quarkus</groupId>
