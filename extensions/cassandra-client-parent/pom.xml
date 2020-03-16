@@ -10,7 +10,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>quarkus-cassandra-client-parent-parent</artifactId>
+    <artifactId>quarkus-cassandra-client-parent</artifactId>
     <name>Quarkus - Cassandra Client - Parent</name>
 
     <packaging>pom</packaging>
