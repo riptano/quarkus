@@ -5,11 +5,8 @@ import io.quarkus.deployment.builditem.FeatureBuildItem;
 
 class CassandraClientParentProcessor {
 
-    private static final String FEATURE = "cassandra-client-parent";
-
     @BuildStep
     FeatureBuildItem feature() {
-        return new FeatureBuildItem(FEATURE);
+        return new FeatureBuildItem(FeatureBuildItem.CASSANDRA_CLIENT);
     }
-
 }
