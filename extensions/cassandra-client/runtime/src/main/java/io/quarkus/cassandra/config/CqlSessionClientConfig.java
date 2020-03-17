@@ -1,14 +1,14 @@
-package io.quarkus.cassandra.runtime.config;
+package io.quarkus.cassandra.config;
 
 import java.util.Map;
 
 import com.datastax.oss.driver.api.core.config.ProgrammaticDriverConfigLoaderBuilder;
+
 import io.quarkus.runtime.annotations.ConfigGroup;
 import io.quarkus.runtime.annotations.ConfigItem;
 
 @ConfigGroup
-public class CqlSessionClientConfig
-{
+public class CqlSessionClientConfig {
     /**
      * Map of settings that will be passed directly to {@link ProgrammaticDriverConfigLoaderBuilder}
      */

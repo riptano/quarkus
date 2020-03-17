@@ -1,17 +1,18 @@
 package io.quarkus.cassandra;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import javax.inject.Inject;
 
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import com.datastax.oss.driver.api.core.CqlSession;
-import io.quarkus.test.QuarkusUnitTest;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import io.quarkus.test.QuarkusUnitTest;
 
 public class CassandraClientConfigTest extends CassandraTestBase {
 

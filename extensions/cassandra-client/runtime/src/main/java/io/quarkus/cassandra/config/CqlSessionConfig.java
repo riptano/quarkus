@@ -1,12 +1,11 @@
-package io.quarkus.cassandra.runtime.config;
+package io.quarkus.cassandra.config;
 
 import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 
 @ConfigRoot(name = CqlSessionConfig.CONFIG_NAME, phase = ConfigPhase.RUN_TIME)
-public class CqlSessionConfig
-{
+public class CqlSessionConfig {
     public static final String CONFIG_NAME = "cassandra";
 
     /**
@@ -14,6 +13,5 @@ public class CqlSessionConfig
      */
     @ConfigItem(name = ConfigItem.PARENT)
     public CqlSessionClientConfig cqlSessionClientConfig;
-
 
 }

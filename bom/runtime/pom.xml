@@ -869,11 +869,24 @@
                 <groupId>com.datastax.oss</groupId>
                 <artifactId>java-driver-core</artifactId>
                 <version>${datastax.java.driver.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.datastax.oss</groupId>
-                <artifactId>java-driver-test-infra</artifactId>
-                <version>${datastax.java.driver.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.tinkerpop</groupId>
+                        <artifactId>gremlin-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.tinkerpop</groupId>
+                        <artifactId>gremlin-driver</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.tinkerpop</groupId>
+                        <artifactId>tinkergraph-gremlin</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.ow2.asm</groupId>
+                        <artifactId>asm-util</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <!-- Quarkus test dependencies -->
             <dependency>
@@ -1081,6 +1094,11 @@
             <dependency>
                 <groupId>io.quarkus</groupId>
                 <artifactId>quarkus-resteasy-mutiny</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-cassandra-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
