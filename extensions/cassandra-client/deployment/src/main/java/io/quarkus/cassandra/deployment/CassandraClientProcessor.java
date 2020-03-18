@@ -17,15 +17,13 @@ import io.quarkus.arc.Unremovable;
 import io.quarkus.arc.deployment.BeanContainerListenerBuildItem;
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
 import io.quarkus.arc.deployment.GeneratedBeanGizmoAdaptor;
-import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
 import io.quarkus.cassandra.config.CqlSessionClientConfig;
 import io.quarkus.cassandra.config.CqlSessionConfig;
+import io.quarkus.cassandra.runtime.AbstractCqlSessionProducer;
 import io.quarkus.cassandra.runtime.CassandraClientRecorder;
-import io.quarkus.cassandra.runtime.CqlSessionProducer;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.Record;
-import io.quarkus.deployment.annotations.Weak;
 import io.quarkus.deployment.builditem.ConfigurationBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.recording.RecorderContext;
@@ -36,22 +34,22 @@ import io.quarkus.gizmo.MethodDescriptor;
 import io.quarkus.gizmo.ResultHandle;
 
 class CassandraClientProcessor {
-    private static final DotName UNREMOVABLE_BEAN = DotName.createSimple(CqlSessionProducer.class.getName());
-
-    @BuildStep
-    UnremovableBeanBuildItem markBeansAsUnremovable() {
-        return new UnremovableBeanBuildItem(new UnremovableBeanBuildItem.BeanTypeExclusion(UNREMOVABLE_BEAN));
-    }
-
-    /**
-     * When CassandraClientBuildItem is actually consumed by the build, then we need to make the cassandra bean unremovable
-     * because it can be potentially used by the consumers
-     */
-    @BuildStep
-    @Weak
-    CassandraUnremovableBuildItem unremovable(@SuppressWarnings("unused") BuildProducer<CassandraClientBuildItem> producer) {
-        return new CassandraUnremovableBuildItem();
-    }
+    private static final DotName UNREMOVABLE_BEAN = DotName.createSimple(AbstractCqlSessionProducer.class.getName());
+    //
+    //    @BuildStep
+    //    UnremovableBeanBuildItem markBeansAsUnremovable() {
+    //        return new UnremovableBeanBuildItem(new UnremovableBeanBuildItem.BeanTypeExclusion(UNREMOVABLE_BEAN));
+    //    }
+    //
+    //    /**
+    //     * When CassandraClientBuildItem is actually consumed by the build, then we need to make the cassandra bean unremovable
+    //     * because it can be potentially used by the consumers
+    //     */
+    //    @BuildStep
+    //    @Weak
+    //    CassandraUnremovableBuildItem unremovable(@SuppressWarnings("unused") BuildProducer<CassandraClientBuildItem> producer) {
+    //        return new CassandraUnremovableBuildItem();
+    //    }
 
     @SuppressWarnings("unchecked")
     @Record(STATIC_INIT)
@@ -70,11 +68,11 @@ class CassandraClientProcessor {
                 cassandraUnremovableBuildItem.isPresent());
 
         return new BeanContainerListenerBuildItem(recorder.addCassandraClient(
-                (Class<? extends CqlSessionProducer>) recorderContext.classProxy(cassandraClientProducerClassName)));
+                (Class<? extends AbstractCqlSessionProducer>) recorderContext.classProxy(cassandraClientProducerClassName)));
     }
 
     private String getCassandraClientProducerClassName() {
-        return CqlSessionProducer.class.getPackage().getName() + "."
+        return AbstractCqlSessionProducer.class.getPackage().getName() + "."
                 + "CqlSessionProducer";
     }
 
@@ -86,11 +84,11 @@ class CassandraClientProcessor {
 
         try (ClassCreator classCreator = ClassCreator.builder().classOutput(classOutput)
                 .className(cassandraClientProducerClassName)
-                .superClass(CqlSessionProducer.class)
+                .superClass(AbstractCqlSessionProducer.class)
                 .build()) {
             classCreator.addAnnotation(ApplicationScoped.class);
 
-            try (MethodCreator defaultCassandraClient = classCreator.getMethodCreator("createCassandraClient",
+            try (MethodCreator defaultCassandraClient = classCreator.getMethodCreator("createDefaultCassandraClient",
                     CqlSession.class)) {
                 defaultCassandraClient.addAnnotation(ApplicationScoped.class);
                 defaultCassandraClient.addAnnotation(Produces.class);
@@ -100,15 +98,15 @@ class CassandraClientProcessor {
                 }
 
                 ResultHandle cassandraClientConfig = defaultCassandraClient.invokeVirtualMethod(
-                        MethodDescriptor.ofMethod(CqlSessionProducer.class, "getCassandraClientConfig",
+                        MethodDescriptor.ofMethod(AbstractCqlSessionProducer.class, "getCassandraClientConfig",
                                 CqlSessionClientConfig.class),
                         defaultCassandraClient.getThis());
 
                 defaultCassandraClient.returnValue(
                         defaultCassandraClient.invokeVirtualMethod(
-                                MethodDescriptor.ofMethod(CqlSessionProducer.class, "createCassandraClient",
+                                MethodDescriptor.ofMethod(AbstractCqlSessionProducer.class, "createCassandraClient",
                                         CqlSession.class,
-                                        CqlSessionConfig.class, String.class),
+                                        CqlSessionClientConfig.class),
                                 defaultCassandraClient.getThis(),
                                 cassandraClientConfig));
             }

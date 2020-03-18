@@ -15,14 +15,14 @@ import io.quarkus.runtime.annotations.Recorder;
 public class CassandraClientRecorder {
 
     public BeanContainerListener addCassandraClient(
-            Class<? extends CqlSessionProducer> cqlSessionProducerClass) {
+            Class<? extends AbstractCqlSessionProducer> cqlSessionProducerClass) {
         return beanContainer -> {
             beanContainer.instance(cqlSessionProducerClass);
         };
     }
 
     public void configureRuntimeProperties(CqlSessionConfig config) {
-        CqlSessionProducer producer = Arc.container().instance(CqlSessionProducer.class).get();
+        AbstractCqlSessionProducer producer = Arc.container().instance(AbstractCqlSessionProducer.class).get();
         producer.setConfig(config);
     }
 

@@ -17,7 +17,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import io.quarkus.cassandra.config.CqlSessionClientConfig;
 import io.quarkus.cassandra.config.CqlSessionConfig;
 
-public class CqlSessionProducer {
+public abstract class AbstractCqlSessionProducer {
 
     private CqlSessionConfig config;
 
@@ -25,12 +25,12 @@ public class CqlSessionProducer {
         this.config = config;
     }
 
-    private DriverConfigLoader createDriverConfigLoader(CqlSessionConfig config) {
+    private DriverConfigLoader createDriverConfigLoader(CqlSessionClientConfig config) {
         ProgrammaticDriverConfigLoaderBuilder builder = new DefaultProgrammaticDriverConfigLoaderBuilder(
                 () -> {
                     ConfigFactory.invalidateCaches();
                     return ConfigFactory.defaultOverrides()
-                            .withFallback(ConfigFactory.parseMap(config.cqlSessionClientConfig.datastaxJavaDriver,
+                            .withFallback(ConfigFactory.parseMap(config.datastaxJavaDriver,
                                     "Spring properties"))
                             .withFallback(ConfigFactory.parseResources("application.conf"))
                             .withFallback(ConfigFactory.parseResources("application.json"))
@@ -51,8 +51,8 @@ public class CqlSessionProducer {
         return config.cqlSessionClientConfig;
     }
 
-    public CqlSession createCassandraClient(CqlSessionConfig cassandraClientConfig) {
-        DriverConfigLoader configLoader = createDriverConfigLoader(cassandraClientConfig);
+    public CqlSession createCassandraClient(CqlSessionClientConfig cqlSessionClientConfig) {
+        DriverConfigLoader configLoader = createDriverConfigLoader(cqlSessionClientConfig);
         CqlSessionBuilder builder = CqlSession.builder().withConfigLoader(configLoader);
         return builder.build();
     }
