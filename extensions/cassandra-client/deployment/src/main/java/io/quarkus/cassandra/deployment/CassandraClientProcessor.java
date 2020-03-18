@@ -3,8 +3,6 @@ package io.quarkus.cassandra.deployment;
 import static io.quarkus.deployment.annotations.ExecutionTime.RUNTIME_INIT;
 import static io.quarkus.deployment.annotations.ExecutionTime.STATIC_INIT;
 
-import java.util.Optional;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Produces;
@@ -35,21 +33,6 @@ import io.quarkus.gizmo.ResultHandle;
 
 class CassandraClientProcessor {
     private static final DotName UNREMOVABLE_BEAN = DotName.createSimple(AbstractCqlSessionProducer.class.getName());
-    //
-    //    @BuildStep
-    //    UnremovableBeanBuildItem markBeansAsUnremovable() {
-    //        return new UnremovableBeanBuildItem(new UnremovableBeanBuildItem.BeanTypeExclusion(UNREMOVABLE_BEAN));
-    //    }
-    //
-    //    /**
-    //     * When CassandraClientBuildItem is actually consumed by the build, then we need to make the cassandra bean unremovable
-    //     * because it can be potentially used by the consumers
-    //     */
-    //    @BuildStep
-    //    @Weak
-    //    CassandraUnremovableBuildItem unremovable(@SuppressWarnings("unused") BuildProducer<CassandraClientBuildItem> producer) {
-    //        return new CassandraUnremovableBuildItem();
-    //    }
 
     @SuppressWarnings("unchecked")
     @Record(STATIC_INIT)
@@ -58,14 +41,12 @@ class CassandraClientProcessor {
             RecorderContext recorderContext,
             CassandraClientRecorder recorder,
             BuildProducer<FeatureBuildItem> feature,
-            Optional<CassandraUnremovableBuildItem> cassandraUnremovableBuildItem,
             BuildProducer<GeneratedBeanBuildItem> generatedBean) {
 
         feature.produce(new FeatureBuildItem(FeatureBuildItem.CASSANDRA_CLIENT));
 
         String cassandraClientProducerClassName = getCassandraClientProducerClassName();
-        createCassandraClientProducerBean(generatedBean, cassandraClientProducerClassName,
-                cassandraUnremovableBuildItem.isPresent());
+        createCassandraClientProducerBean(generatedBean, cassandraClientProducerClassName);
 
         return new BeanContainerListenerBuildItem(recorder.addCassandraClient(
                 (Class<? extends AbstractCqlSessionProducer>) recorderContext.classProxy(cassandraClientProducerClassName)));
@@ -78,7 +59,7 @@ class CassandraClientProcessor {
 
     private void createCassandraClientProducerBean(
             BuildProducer<GeneratedBeanBuildItem> generatedBean,
-            String cassandraClientProducerClassName, boolean makeUnremovable) {
+            String cassandraClientProducerClassName) {
 
         ClassOutput classOutput = new GeneratedBeanGizmoAdaptor(generatedBean);
 
@@ -93,9 +74,9 @@ class CassandraClientProcessor {
                 defaultCassandraClient.addAnnotation(ApplicationScoped.class);
                 defaultCassandraClient.addAnnotation(Produces.class);
                 defaultCassandraClient.addAnnotation(Default.class);
-                if (makeUnremovable) {
-                    defaultCassandraClient.addAnnotation(Unremovable.class);
-                }
+
+                // make CqlSession as Unremovable bean
+                defaultCassandraClient.addAnnotation(Unremovable.class);
 
                 ResultHandle cassandraClientConfig = defaultCassandraClient.invokeVirtualMethod(
                         MethodDescriptor.ofMethod(AbstractCqlSessionProducer.class, "getCassandraClientConfig",
