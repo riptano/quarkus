@@ -1,5 +1,7 @@
 package io.quarkus.cassandra;
 
+import static com.datastax.oss.driver.api.core.config.DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER;
+import static com.datastax.oss.driver.api.core.config.DefaultDriverOption.REQUEST_PAGE_SIZE;
 import static com.datastax.oss.driver.api.core.config.DefaultDriverOption.REQUEST_TIMEOUT;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -8,7 +10,6 @@ import java.time.temporal.ChronoUnit;
 
 import javax.inject.Inject;
 
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.Test;
@@ -23,8 +24,10 @@ public class CassandraClientConfigTest extends CassandraTestBase {
 
     @RegisterExtension
     static final QuarkusUnitTest config = new QuarkusUnitTest()
-            .setArchiveProducer(() -> ShrinkWrap.create(JavaArchive.class).addClasses(CassandraTestBase.class))
-            .withConfigurationResource("application-cassandra-client.properties");
+            .withConfigurationResource("application-cassandra-client.properties")
+            .setArchiveProducer(() -> ShrinkWrap.create(JavaArchive.class).addClasses(CassandraTestBase.class)
+                    .addAsResource("application.json")
+                    .addAsResource("application.conf"));
 
     @Inject
     CqlSession cqlSession;
@@ -38,6 +41,20 @@ public class CassandraClientConfigTest extends CassandraTestBase {
     public void testSettingSetFromApplicationProperties() {
         DriverExecutionProfile profile = cqlSession.getContext().getConfig().getDefaultProfile();
 
-        AssertionsForClassTypes.assertThat(profile.getDuration(REQUEST_TIMEOUT)).isEqualTo(Duration.of(20, ChronoUnit.SECONDS));
+        assertThat(profile.getString(LOAD_BALANCING_LOCAL_DATACENTER)).isEqualTo("datacenter1");
+    }
+
+    @Test
+    public void applicationConfSettingsShouldHavePriorityOverReferenceConfFromDriver() {
+        DriverExecutionProfile profile = cqlSession.getContext().getConfig().getDefaultProfile();
+
+        assertThat(profile.getDuration(REQUEST_TIMEOUT)).isEqualTo(Duration.of(20, ChronoUnit.SECONDS));
+    }
+
+    @Test
+    public void applicationJsonSettingsShouldHavePriorityOverReferenceConfFromDriver() {
+        DriverExecutionProfile profile = cqlSession.getContext().getConfig().getDefaultProfile();
+
+        assertThat(profile.getInt(REQUEST_PAGE_SIZE)).isEqualTo(1000);
     }
 }

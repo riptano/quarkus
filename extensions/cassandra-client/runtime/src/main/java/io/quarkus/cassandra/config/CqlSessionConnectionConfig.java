@@ -15,7 +15,7 @@ public class CqlSessionConnectionConfig {
      * Contact-points used to connect to Cassandra.
      * If not specified, it will connect to local-host.
      */
-    @ConfigItem(name = "contact-points", defaultValue = "127.0.0.1")
+    @ConfigItem(name = "contact-points", defaultValue = "127.0.0.1:9042")
     public List<String> contactPoints;
 
     /**

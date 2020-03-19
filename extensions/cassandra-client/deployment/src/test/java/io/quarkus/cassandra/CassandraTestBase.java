@@ -10,7 +10,6 @@ public class CassandraTestBase {
     private static GenericContainer<?> cassandraContainer;
     private static final String CASSANDRA_311 = "cassandra:3.11";
     protected static final String CASSANDRA_INTERNAL_PORT = "9042";
-    protected static final String DATACENTER = "datacenter1";
 
     @BeforeAll
     public static void startCassandraDatabase() throws IOException {

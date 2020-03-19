@@ -27,7 +27,7 @@ public abstract class AbstractCqlSessionProducer {
     }
 
     private ProgrammaticDriverConfigLoaderBuilder createDriverConfigLoader() {
-        ProgrammaticDriverConfigLoaderBuilder builder = new DefaultProgrammaticDriverConfigLoaderBuilder(
+        return new DefaultProgrammaticDriverConfigLoaderBuilder(
                 () -> {
                     ConfigFactory.invalidateCaches();
                     return ConfigFactory.defaultOverrides()
@@ -44,8 +44,6 @@ public abstract class AbstractCqlSessionProducer {
                 return new NonReloadableDriverConfigLoader(super.build());
             }
         };
-
-        return builder;
     }
 
     CqlSessionConfig getCassandraClientConfig() {
@@ -55,7 +53,6 @@ public abstract class AbstractCqlSessionProducer {
     public CqlSession createCassandraClient(CqlSessionConfig config) {
         ProgrammaticDriverConfigLoaderBuilder configLoaderBuilder = createDriverConfigLoader();
         configureConnectionSettings(configLoaderBuilder, config.cqlSessionConnectionConfig);
-
         CqlSessionBuilder builder = CqlSession.builder().withConfigLoader(configLoaderBuilder.build());
         return builder.build();
     }
