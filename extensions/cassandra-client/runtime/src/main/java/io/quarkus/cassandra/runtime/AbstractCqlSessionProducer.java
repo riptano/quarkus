@@ -4,6 +4,7 @@ import java.util.concurrent.CompletionStage;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
+import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.config.DriverConfig;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 import com.datastax.oss.driver.api.core.config.ProgrammaticDriverConfigLoaderBuilder;
@@ -14,8 +15,8 @@ import com.datastax.oss.driver.internal.core.util.concurrent.CompletableFutures;
 import com.typesafe.config.ConfigFactory;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import io.quarkus.cassandra.config.CqlSessionClientConfig;
 import io.quarkus.cassandra.config.CqlSessionConfig;
+import io.quarkus.cassandra.config.CqlSessionConnectionConfig;
 
 public abstract class AbstractCqlSessionProducer {
 
@@ -25,13 +26,12 @@ public abstract class AbstractCqlSessionProducer {
         this.config = config;
     }
 
-    private DriverConfigLoader createDriverConfigLoader(CqlSessionClientConfig config) {
+    private ProgrammaticDriverConfigLoaderBuilder createDriverConfigLoader() {
         ProgrammaticDriverConfigLoaderBuilder builder = new DefaultProgrammaticDriverConfigLoaderBuilder(
                 () -> {
                     ConfigFactory.invalidateCaches();
                     return ConfigFactory.defaultOverrides()
-                            .withFallback(ConfigFactory.parseMap(config.datastaxJavaDriver,
-                                    "Spring properties"))
+                            // todo do we need to load both conf and json?
                             .withFallback(ConfigFactory.parseResources("application.conf"))
                             .withFallback(ConfigFactory.parseResources("application.json"))
                             .withFallback(ConfigFactory.defaultReference())
@@ -44,17 +44,28 @@ public abstract class AbstractCqlSessionProducer {
                 return new NonReloadableDriverConfigLoader(super.build());
             }
         };
+
+        return builder;
+    }
+
+    CqlSessionConfig getCassandraClientConfig() {
+        return config;
+    }
+
+    public CqlSession createCassandraClient(CqlSessionConfig config) {
+        ProgrammaticDriverConfigLoaderBuilder configLoaderBuilder = createDriverConfigLoader();
+        configureConnectionSettings(configLoaderBuilder, config.cqlSessionConnectionConfig);
+
+        CqlSessionBuilder builder = CqlSession.builder().withConfigLoader(configLoaderBuilder.build());
         return builder.build();
     }
 
-    CqlSessionClientConfig getCassandraClientConfig() {
-        return config.cqlSessionClientConfig;
-    }
-
-    public CqlSession createCassandraClient(CqlSessionClientConfig cqlSessionClientConfig) {
-        DriverConfigLoader configLoader = createDriverConfigLoader(cqlSessionClientConfig);
-        CqlSessionBuilder builder = CqlSession.builder().withConfigLoader(configLoader);
-        return builder.build();
+    private void configureConnectionSettings(ProgrammaticDriverConfigLoaderBuilder configLoaderBuilder,
+            CqlSessionConnectionConfig config) {
+        configLoaderBuilder.withStringList(DefaultDriverOption.CONTACT_POINTS, config.contactPoints);
+        configLoaderBuilder.withString(DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER, config.localDataCenter);
+        config.requestTimeout.ifPresent(v -> configLoaderBuilder.withDuration(
+                DefaultDriverOption.REQUEST_TIMEOUT, v));
     }
 
     private static class NonReloadableDriverConfigLoader implements DriverConfigLoader {

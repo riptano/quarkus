@@ -15,7 +15,6 @@ import io.quarkus.arc.Unremovable;
 import io.quarkus.arc.deployment.BeanContainerListenerBuildItem;
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
 import io.quarkus.arc.deployment.GeneratedBeanGizmoAdaptor;
-import io.quarkus.cassandra.config.CqlSessionClientConfig;
 import io.quarkus.cassandra.config.CqlSessionConfig;
 import io.quarkus.cassandra.runtime.AbstractCqlSessionProducer;
 import io.quarkus.cassandra.runtime.CassandraClientRecorder;
@@ -80,14 +79,14 @@ class CassandraClientProcessor {
 
                 ResultHandle cassandraClientConfig = defaultCassandraClient.invokeVirtualMethod(
                         MethodDescriptor.ofMethod(AbstractCqlSessionProducer.class, "getCassandraClientConfig",
-                                CqlSessionClientConfig.class),
+                                CqlSessionConfig.class),
                         defaultCassandraClient.getThis());
 
                 defaultCassandraClient.returnValue(
                         defaultCassandraClient.invokeVirtualMethod(
                                 MethodDescriptor.ofMethod(AbstractCqlSessionProducer.class, "createCassandraClient",
                                         CqlSession.class,
-                                        CqlSessionClientConfig.class),
+                                        CqlSessionConfig.class),
                                 defaultCassandraClient.getThis(),
                                 cassandraClientConfig));
             }

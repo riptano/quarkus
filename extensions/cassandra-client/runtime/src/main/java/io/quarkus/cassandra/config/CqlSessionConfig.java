@@ -12,6 +12,8 @@ public class CqlSessionConfig {
      * The cassandra client config.
      */
     @ConfigItem(name = ConfigItem.PARENT)
-    public CqlSessionClientConfig cqlSessionClientConfig;
+    public CqlSessionConnectionConfig cqlSessionConnectionConfig;
+
+    // todo more low granular conf objects (i.e. ssl, cloud)
 
 }
