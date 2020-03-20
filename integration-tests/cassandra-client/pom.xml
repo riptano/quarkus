@@ -12,12 +12,55 @@
 
     <artifactId>quarkus-integration-test-cassandra-client</artifactId>
     <name>Quarkus - Integration Tests - DataStax Cassandra Client</name>
+<!--    <properties>-->
+<!--        <datastax.java.driver.version>4.5.0</datastax.java.driver.version>-->
+<!--    </properties>-->
 
     <dependencies>
         <dependency>
             <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
             <artifactId>quarkus-cassandra-client</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.datastax.oss</groupId>
+            <artifactId>java-driver-mapper-runtime</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.datastax.oss</groupId>
+            <artifactId>java-driver-mapper-processor</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-test-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.annotation</groupId>
+                    <artifactId>javax.annotation-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -99,6 +142,20 @@
                                 </configuration>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <source>1.8</source> <!-- (or higher) -->
+                            <target>1.8</target> <!-- (or higher) -->
+                            <annotationProcessorPaths>
+                                <path>
+                                    <groupId>com.datastax.oss</groupId>
+                                    <artifactId>java-driver-mapper-processor</artifactId>
+<!--                                    <version>${datastax.java.driver.version}</version>-->
+                                </path>
+                            </annotationProcessorPaths>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
