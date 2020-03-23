@@ -19,8 +19,10 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.config.DriverExecutionProfile;
 
 import io.quarkus.test.QuarkusUnitTest;
+import io.quarkus.test.common.QuarkusTestResource;
 
-public class CassandraClientConfigTest extends CassandraTestBase {
+@QuarkusTestResource(CassandraTestBase.class)
+public class CassandraClientConfigTest {
 
     @RegisterExtension
     static final QuarkusUnitTest config = new QuarkusUnitTest()
