@@ -27,6 +27,7 @@ import io.quarkus.gizmo.ClassOutput;
 import io.quarkus.gizmo.MethodCreator;
 import io.quarkus.gizmo.MethodDescriptor;
 import io.quarkus.gizmo.ResultHandle;
+import io.quarkus.smallrye.health.deployment.spi.HealthBuildItem;
 
 class CassandraClientProcessor {
 
@@ -104,5 +105,11 @@ class CassandraClientProcessor {
     @Record(value = RUNTIME_INIT, optional = true)
     CassandraClientBuildItem cassandraClient(CassandraClientRecorder recorder) {
         return new CassandraClientBuildItem(recorder.getClient());
+    }
+
+    @BuildStep
+    HealthBuildItem addHealthCheck(CassandraClientBuildTimeConfig buildTimeConfig) {
+        return new HealthBuildItem("io.quarkus.cassandra.runtime.health.CassandraHealthCheck",
+                buildTimeConfig.healthEnabled, "cassandra");
     }
 }
