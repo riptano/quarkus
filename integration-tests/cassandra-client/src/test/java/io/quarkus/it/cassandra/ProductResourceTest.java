@@ -32,7 +32,7 @@ public class ProductResourceTest {
     }
 
     @Test
-    public void shouldSaveAndRetrieveUsingCustomNameConvertedThatUsesReflection() {
+    public void shouldSaveAndRetrieveUsingCustomNameConverterThatUsesReflection() {
         // create product
         String productId = given()
                 .when().post("/cassandra-name-converter/product/100")
