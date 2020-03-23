@@ -15,14 +15,14 @@ import com.datastax.oss.driver.internal.core.util.concurrent.CompletableFutures;
 import com.typesafe.config.ConfigFactory;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import io.quarkus.cassandra.config.CqlSessionConfig;
-import io.quarkus.cassandra.config.CqlSessionConnectionConfig;
+import io.quarkus.cassandra.config.CassandraClientConfig;
+import io.quarkus.cassandra.config.CassandraClientConnectionConfig;
 
-public abstract class AbstractCqlSessionProducer {
+public abstract class AbstractCassandraClientProducer {
 
-    private CqlSessionConfig config;
+    private CassandraClientConfig config;
 
-    public void setConfig(CqlSessionConfig config) {
+    public void setConfig(CassandraClientConfig config) {
         this.config = config;
     }
 
@@ -46,19 +46,19 @@ public abstract class AbstractCqlSessionProducer {
         };
     }
 
-    CqlSessionConfig getCassandraClientConfig() {
+    CassandraClientConfig getCassandraClientConfig() {
         return config;
     }
 
-    public CqlSession createCassandraClient(CqlSessionConfig config) {
+    public CqlSession createCassandraClient(CassandraClientConfig config) {
         ProgrammaticDriverConfigLoaderBuilder configLoaderBuilder = createDriverConfigLoader();
-        configureConnectionSettings(configLoaderBuilder, config.cqlSessionConnectionConfig);
+        configureConnectionSettings(configLoaderBuilder, config.cassandraClientConnectionConfig);
         CqlSessionBuilder builder = CqlSession.builder().withConfigLoader(configLoaderBuilder.build());
         return builder.build();
     }
 
     private void configureConnectionSettings(ProgrammaticDriverConfigLoaderBuilder configLoaderBuilder,
-            CqlSessionConnectionConfig config) {
+            CassandraClientConnectionConfig config) {
         configLoaderBuilder.withStringList(DefaultDriverOption.CONTACT_POINTS, config.contactPoints);
         configLoaderBuilder.withString(DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER, config.localDataCenter);
         config.requestTimeout.ifPresent(v -> configLoaderBuilder.withDuration(

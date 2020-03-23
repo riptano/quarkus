@@ -7,16 +7,14 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Produces;
 
-import org.jboss.jandex.DotName;
-
 import com.datastax.oss.driver.api.core.CqlSession;
 
 import io.quarkus.arc.Unremovable;
 import io.quarkus.arc.deployment.BeanContainerListenerBuildItem;
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
 import io.quarkus.arc.deployment.GeneratedBeanGizmoAdaptor;
-import io.quarkus.cassandra.config.CqlSessionConfig;
-import io.quarkus.cassandra.runtime.AbstractCqlSessionProducer;
+import io.quarkus.cassandra.config.CassandraClientConfig;
+import io.quarkus.cassandra.runtime.AbstractCassandraClientProducer;
 import io.quarkus.cassandra.runtime.CassandraClientRecorder;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -31,7 +29,6 @@ import io.quarkus.gizmo.MethodDescriptor;
 import io.quarkus.gizmo.ResultHandle;
 
 class CassandraClientProcessor {
-    private static final DotName UNREMOVABLE_BEAN = DotName.createSimple(AbstractCqlSessionProducer.class.getName());
 
     @SuppressWarnings("unchecked")
     @Record(STATIC_INIT)
@@ -48,12 +45,13 @@ class CassandraClientProcessor {
         createCassandraClientProducerBean(generatedBean, cassandraClientProducerClassName);
 
         return new BeanContainerListenerBuildItem(recorder.addCassandraClient(
-                (Class<? extends AbstractCqlSessionProducer>) recorderContext.classProxy(cassandraClientProducerClassName)));
+                (Class<? extends AbstractCassandraClientProducer>) recorderContext
+                        .classProxy(cassandraClientProducerClassName)));
     }
 
     private String getCassandraClientProducerClassName() {
-        return AbstractCqlSessionProducer.class.getPackage().getName() + "."
-                + "CqlSessionProducer";
+        return AbstractCassandraClientProducer.class.getPackage().getName() + "."
+                + "CassandraClientProducer";
     }
 
     private void createCassandraClientProducerBean(
@@ -64,7 +62,7 @@ class CassandraClientProcessor {
 
         try (ClassCreator classCreator = ClassCreator.builder().classOutput(classOutput)
                 .className(cassandraClientProducerClassName)
-                .superClass(AbstractCqlSessionProducer.class)
+                .superClass(AbstractCassandraClientProducer.class)
                 .build()) {
             classCreator.addAnnotation(ApplicationScoped.class);
 
@@ -78,15 +76,15 @@ class CassandraClientProcessor {
                 defaultCassandraClient.addAnnotation(Unremovable.class);
 
                 ResultHandle cassandraClientConfig = defaultCassandraClient.invokeVirtualMethod(
-                        MethodDescriptor.ofMethod(AbstractCqlSessionProducer.class, "getCassandraClientConfig",
-                                CqlSessionConfig.class),
+                        MethodDescriptor.ofMethod(AbstractCassandraClientProducer.class, "getCassandraClientConfig",
+                                CassandraClientConfig.class),
                         defaultCassandraClient.getThis());
 
                 defaultCassandraClient.returnValue(
                         defaultCassandraClient.invokeVirtualMethod(
-                                MethodDescriptor.ofMethod(AbstractCqlSessionProducer.class, "createCassandraClient",
+                                MethodDescriptor.ofMethod(AbstractCassandraClientProducer.class, "createCassandraClient",
                                         CqlSession.class,
-                                        CqlSessionConfig.class),
+                                        CassandraClientConfig.class),
                                 defaultCassandraClient.getThis(),
                                 cassandraClientConfig));
             }
@@ -97,7 +95,7 @@ class CassandraClientProcessor {
     @Record(RUNTIME_INIT)
     @BuildStep
     void configureRuntimePropertiesAndBuildClient(CassandraClientRecorder recorder,
-            CqlSessionConfig cassandraConfig,
+            CassandraClientConfig cassandraConfig,
             ConfigurationBuildItem config) {
         recorder.configureRuntimeProperties(cassandraConfig);
     }

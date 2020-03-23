@@ -10,7 +10,7 @@ import io.quarkus.runtime.annotations.ConfigGroup;
 import io.quarkus.runtime.annotations.ConfigItem;
 
 @ConfigGroup
-public class CqlSessionConnectionConfig {
+public class CassandraClientConnectionConfig {
     /**
      * Contact-points used to connect to Cassandra.
      * If not specified, it will connect to local-host.

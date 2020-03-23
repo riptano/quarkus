@@ -7,7 +7,7 @@ import com.datastax.oss.driver.api.core.CqlSession;
 
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.runtime.BeanContainerListener;
-import io.quarkus.cassandra.config.CqlSessionConfig;
+import io.quarkus.cassandra.config.CassandraClientConfig;
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
 
@@ -15,14 +15,14 @@ import io.quarkus.runtime.annotations.Recorder;
 public class CassandraClientRecorder {
 
     public BeanContainerListener addCassandraClient(
-            Class<? extends AbstractCqlSessionProducer> cqlSessionProducerClass) {
+            Class<? extends AbstractCassandraClientProducer> cqlSessionProducerClass) {
         return beanContainer -> {
             beanContainer.instance(cqlSessionProducerClass);
         };
     }
 
-    public void configureRuntimeProperties(CqlSessionConfig config) {
-        AbstractCqlSessionProducer producer = Arc.container().instance(AbstractCqlSessionProducer.class).get();
+    public void configureRuntimeProperties(CassandraClientConfig config) {
+        AbstractCassandraClientProducer producer = Arc.container().instance(AbstractCassandraClientProducer.class).get();
         producer.setConfig(config);
     }
 
