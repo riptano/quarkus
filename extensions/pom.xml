@@ -91,6 +91,7 @@
         <module>mongodb-client</module>
         <module>artemis-core</module>
         <module>artemis-jms</module>
+        <module>cassandra-client</module>
 
         <!-- Spring -->
         <module>spring-di</module>
@@ -156,7 +157,6 @@
         
         <!-- Templating -->
         <module>qute</module>
-        <module>cassandra-client</module>
     </modules>
 
     <!-- Unfortunately the config below introduces a build dependency on the maven plugin

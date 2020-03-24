@@ -12,9 +12,6 @@
 
     <artifactId>quarkus-integration-test-cassandra-client</artifactId>
     <name>Quarkus - Integration Tests - DataStax Cassandra Client</name>
-<!--    <properties>-->
-<!--        <datastax.java.driver.version>4.5.0</datastax.java.driver.version>-->
-<!--    </properties>-->
 
     <dependencies>
         <dependency>
@@ -159,6 +156,9 @@
                                 </configuration>
                             </execution>
                         </executions>
+                        <configuration>
+                            <skip>false</skip>
+                        </configuration>
                     </plugin>
                     <plugin>
                         <artifactId>maven-compiler-plugin</artifactId>
@@ -169,7 +169,6 @@
                                 <path>
                                     <groupId>com.datastax.oss</groupId>
                                     <artifactId>java-driver-mapper-processor</artifactId>
-<!--                                    <version>${datastax.java.driver.version}</version>-->
                                 </path>
                             </annotationProcessorPaths>
                         </configuration>
