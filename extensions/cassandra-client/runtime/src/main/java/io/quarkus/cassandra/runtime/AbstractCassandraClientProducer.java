@@ -22,7 +22,7 @@ public abstract class AbstractCassandraClientProducer {
 
     private CassandraClientConfig config;
 
-    public void setConfig(CassandraClientConfig config) {
+    public void setCassandraClientConfig(CassandraClientConfig config) {
         this.config = config;
     }
 

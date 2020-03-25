@@ -16,14 +16,12 @@ public class CassandraClientRecorder {
 
     public BeanContainerListener addCassandraClient(
             Class<? extends AbstractCassandraClientProducer> cqlSessionProducerClass) {
-        return beanContainer -> {
-            beanContainer.instance(cqlSessionProducerClass);
-        };
+        return beanContainer -> beanContainer.instance(cqlSessionProducerClass);
     }
 
     public void configureRuntimeProperties(CassandraClientConfig config) {
         AbstractCassandraClientProducer producer = Arc.container().instance(AbstractCassandraClientProducer.class).get();
-        producer.setConfig(config);
+        producer.setCassandraClientConfig(config);
     }
 
     @SuppressWarnings("rawtypes")
