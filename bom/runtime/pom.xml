@@ -870,16 +870,20 @@
                 <version>${datastax-java-driver.version}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>org.apache.tinkerpop</groupId>
-                        <artifactId>gremlin-core</artifactId>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>jcl-over-slf4j</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>org.apache.tinkerpop</groupId>
-                        <artifactId>gremlin-driver</artifactId>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>org.apache.tinkerpop</groupId>
-                        <artifactId>tinkergraph-gremlin</artifactId>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-json</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.squareup</groupId>
+                        <artifactId>javapoet</artifactId>
                     </exclusion>
                     <exclusion>
                         <groupId>org.ow2.asm</groupId>
