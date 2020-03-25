@@ -1,18 +1,11 @@
 package io.quarkus.cassandra.runtime.health;
 
-import static io.quarkus.cassandra.runtime.health.CassandraHealthCheck.HEALTH_CHECK_QUERY;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import org.eclipse.microprofile.health.HealthCheckResponse;
-import org.eclipse.microprofile.health.HealthCheckResponse.State;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -24,8 +17,14 @@ import com.datastax.oss.driver.api.core.cql.Row;
 import com.datastax.oss.driver.api.core.metadata.Metadata;
 import com.datastax.oss.driver.api.core.metadata.Node;
 import com.datastax.oss.driver.shaded.guava.common.collect.ImmutableMap;
-
 import edu.umd.cs.findbugs.annotations.NonNull;
+import org.eclipse.microprofile.health.HealthCheckResponse;
+import org.eclipse.microprofile.health.HealthCheckResponse.State;
+
+import static io.quarkus.cassandra.runtime.health.CassandraHealthCheck.HEALTH_CHECK_QUERY;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class CassandraHealthCheckTest {
 
@@ -41,7 +40,8 @@ public class CassandraHealthCheckTest {
         CqlSession session = mockCqlSessionWithResultSet(dc, releaseVersion, clusterName, cqlVersion, numberOfNodes);
 
         // when
-        CassandraHealthCheck driverHealthIndicator = new CassandraHealthCheck(session);
+        CassandraHealthCheck cassandraHealthIndicator = new CassandraHealthCheckMock(session);
+        cassandraHealthIndicator.init();
 
         // then
         HashMap<String, Object> expected = new HashMap<>();
@@ -50,7 +50,7 @@ public class CassandraHealthCheckTest {
         expected.put("clusterName", clusterName);
         expected.put("cqlVersion", cqlVersion);
         expected.put("numberOfNodes", numberOfNodes);
-        HealthCheckResponse health = driverHealthIndicator.call();
+        HealthCheckResponse health = cassandraHealthIndicator.call();
         assertThat(health.getState()).isEqualTo(State.UP);
         assertThat(health.getData().get()).isEqualTo(expected);
     }
@@ -62,10 +62,11 @@ public class CassandraHealthCheckTest {
         when(session.execute(HEALTH_CHECK_QUERY)).thenThrow(new RuntimeException("problem"));
 
         // when
-        CassandraHealthCheck driverHealthIndicator = new CassandraHealthCheck(session);
+        CassandraHealthCheck cassandraHealthIndicator = new CassandraHealthCheckMock(session);
+        cassandraHealthIndicator.init();
 
         // then
-        HealthCheckResponse health = driverHealthIndicator.call();
+        HealthCheckResponse health = cassandraHealthIndicator.call();
         assertThat(health.getState()).isEqualTo(State.DOWN);
         assertThat(health.getData().get()).containsKeys("reason");
     }
@@ -76,10 +77,11 @@ public class CassandraHealthCheckTest {
         CqlSession session = mockCqlSessionWithOneNullResult();
 
         // when
-        CassandraHealthCheck driverHealthIndicator = new CassandraHealthCheck(session);
+        CassandraHealthCheck cassandraHealthIndicator = new CassandraHealthCheckMock(session);
+        cassandraHealthIndicator.init();
 
         // then
-        HealthCheckResponse health = driverHealthIndicator.call();
+        HealthCheckResponse health = cassandraHealthIndicator.call();
         assertThat(health.getState()).isEqualTo(State.DOWN);
         assertThat(health.getData().get())
                 .isEqualTo(ImmutableMap.of("reason", "system.local returned null"));
@@ -125,5 +127,19 @@ public class CassandraHealthCheckTest {
                 .add(Arguments.arguments("dc1", "v1", "cluster_1", "v1", 1L))
                 .add(Arguments.arguments(null, null, null, null, 0L))
                 .build();
+    }
+
+    private static class CassandraHealthCheckMock extends CassandraHealthCheck {
+
+        private CqlSession cqlSession;
+
+        public CassandraHealthCheckMock(CqlSession cqlSession) {
+            this.cqlSession = cqlSession;
+        }
+
+        @Override public CqlSession beanProvider()
+        {
+            return cqlSession;
+        }
     }
 }

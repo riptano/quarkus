@@ -2,17 +2,16 @@ package io.quarkus.cassandra.runtime.health;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.cql.Row;
+import io.quarkus.arc.Arc;
 import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
 import org.eclipse.microprofile.health.HealthCheckResponseBuilder;
 import org.eclipse.microprofile.health.Readiness;
-
-import com.datastax.oss.driver.api.core.CqlSession;
-import com.datastax.oss.driver.api.core.cql.Row;
 
 @Readiness
 @ApplicationScoped
@@ -24,9 +23,13 @@ public class CassandraHealthCheck implements HealthCheck {
 
     private CqlSession cqlSession;
 
-    @Inject
-    public CassandraHealthCheck(CqlSession cqlSession) {
-        this.cqlSession = cqlSession;
+    public CqlSession beanProvider(){
+        return Arc.container().instance(CqlSession.class).get();
+    }
+
+    @PostConstruct
+    protected void init() {
+        this.cqlSession = beanProvider();
     }
 
     @Override
