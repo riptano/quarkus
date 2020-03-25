@@ -1,11 +1,18 @@
 package io.quarkus.cassandra.runtime.health;
 
+import static io.quarkus.cassandra.runtime.health.CassandraHealthCheck.HEALTH_CHECK_QUERY;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import org.eclipse.microprofile.health.HealthCheckResponse;
+import org.eclipse.microprofile.health.HealthCheckResponse.State;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -17,14 +24,8 @@ import com.datastax.oss.driver.api.core.cql.Row;
 import com.datastax.oss.driver.api.core.metadata.Metadata;
 import com.datastax.oss.driver.api.core.metadata.Node;
 import com.datastax.oss.driver.shaded.guava.common.collect.ImmutableMap;
-import edu.umd.cs.findbugs.annotations.NonNull;
-import org.eclipse.microprofile.health.HealthCheckResponse;
-import org.eclipse.microprofile.health.HealthCheckResponse.State;
 
-import static io.quarkus.cassandra.runtime.health.CassandraHealthCheck.HEALTH_CHECK_QUERY;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class CassandraHealthCheckTest {
 
@@ -137,8 +138,8 @@ public class CassandraHealthCheckTest {
             this.cqlSession = cqlSession;
         }
 
-        @Override public CqlSession beanProvider()
-        {
+        @Override
+        public CqlSession beanProvider() {
             return cqlSession;
         }
     }
