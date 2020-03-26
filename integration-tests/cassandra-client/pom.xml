@@ -32,6 +32,14 @@
             <artifactId>java-driver-mapper-processor</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.lz4</groupId>
+            <artifactId>lz4-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xerial.snappy</groupId>
+            <artifactId>snappy-java</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-test-common</artifactId>
         </dependency>
@@ -156,9 +164,6 @@
                                 </configuration>
                             </execution>
                         </executions>
-                        <configuration>
-                            <skip>false</skip>
-                        </configuration>
                     </plugin>
                     <plugin>
                         <artifactId>maven-compiler-plugin</artifactId>
