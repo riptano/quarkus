@@ -13,7 +13,7 @@ import io.quarkus.it.cassandra.dao.nameconverters.NameConverterEntity;
 @Path("/cassandra-name-converter")
 public class CassandraNameConverterEndpoint {
     @Inject
-    private NameConvertedDaoService dao;
+    NameConvertedDaoService dao;
 
     @POST
     @Produces(MediaType.TEXT_PLAIN)

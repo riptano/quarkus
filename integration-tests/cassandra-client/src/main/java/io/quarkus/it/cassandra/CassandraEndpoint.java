@@ -16,7 +16,7 @@ import io.quarkus.it.cassandra.dao.Product;
 public class CassandraEndpoint {
 
     @Inject
-    private ProductDaoService dao;
+    ProductDaoService dao;
 
     @POST
     @Produces(MediaType.TEXT_PLAIN)
