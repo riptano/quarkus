@@ -8,6 +8,7 @@
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-integration-tests-parent</artifactId>
         <version>999-SNAPSHOT</version>
+        <relativePath>../</relativePath>
     </parent>
 
     <artifactId>quarkus-integration-test-cassandra-client</artifactId>
@@ -89,7 +90,7 @@
     <build>
         <resources>
             <resource>
-                <directory>src/main/resources</directory>
+                <directory>src/test/resources</directory>
                 <filtering>true</filtering>
             </resource>
         </resources>
@@ -160,6 +161,7 @@
                                 <configuration>
                                     <cleanupServer>true</cleanupServer>
                                     <enableHttpUrlHandler>true</enableHttpUrlHandler>
+                                    <additionalBuildArgs>-H:+TraceClassInitialization</additionalBuildArgs>
                                     <graalvmHome>${graalvmHome}</graalvmHome>
                                 </configuration>
                             </execution>
@@ -174,6 +176,7 @@
                                 <path>
                                     <groupId>com.datastax.oss</groupId>
                                     <artifactId>java-driver-mapper-processor</artifactId>
+                                    <version>4.5.0</version>
                                 </path>
                             </annotationProcessorPaths>
                         </configuration>

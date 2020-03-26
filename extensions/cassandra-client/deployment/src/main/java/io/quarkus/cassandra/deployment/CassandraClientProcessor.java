@@ -8,6 +8,7 @@ import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Produces;
 
 import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.internal.core.metadata.MetadataManager;
 
 import io.quarkus.arc.Unremovable;
 import io.quarkus.arc.deployment.BeanContainerListenerBuildItem;
@@ -21,6 +22,8 @@ import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.ConfigurationBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
 import io.quarkus.deployment.recording.RecorderContext;
 import io.quarkus.gizmo.ClassCreator;
 import io.quarkus.gizmo.ClassOutput;
@@ -112,4 +115,16 @@ class CassandraClientProcessor {
         return new HealthBuildItem("io.quarkus.cassandra.runtime.health.CassandraHealthCheck",
                 buildTimeConfig.healthEnabled, "cassandra");
     }
+
+    @BuildStep
+    RuntimeInitializedClassBuildItem runtimeMetadataManager() {
+        return new RuntimeInitializedClassBuildItem(MetadataManager.class.getCanonicalName());
+    }
+
+    // todo make it work and include reference.conf
+    @BuildStep
+    NativeImageResourceBuildItem referenceConf() {
+        return new NativeImageResourceBuildItem(".*reference\\.conf");
+    }
+
 }
