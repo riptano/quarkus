@@ -124,7 +124,7 @@ class CassandraClientProcessor {
     // todo make it work and include reference.conf
     @BuildStep
     NativeImageResourceBuildItem referenceConf() {
-        return new NativeImageResourceBuildItem(".*reference\\.conf");
+        return new NativeImageResourceBuildItem("/reference.conf");
     }
 
 }
